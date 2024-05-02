@@ -84,12 +84,15 @@ WSGI_APPLICATION = 'backend_us.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': env('DB_ENGINE'),
         'NAME': env('DB_DATABASE'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASS'),
         'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT')
+        'PORT': env('DB_PORT'), 
+        'OPTIONS': {
+            'auth_plugin': env('DB_AUTH_PLUGIN')
+        }
     }
 }
 
