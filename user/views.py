@@ -14,7 +14,8 @@ from allauth.account.decorators import login_required
 @api_view(["GET"])
 def home(request):
     if request.user.is_authenticated:
-        return Response("<p>You are logged in</p>", status=status.HTTP_200_OK, content_type="text/html")
+        user_serializer = AuthUserSerializer(request.user)
+        return Response(user_serializer.data, status=status.HTTP_200_OK)
     return redirect("/g-signin")
 
 @api_view(["POST"])
