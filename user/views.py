@@ -7,34 +7,42 @@ from rest_framework.response import Response
 from user.models import AuthUser, UserDetails
 from user.serializer import AuthUserSerializer
 
-from allauth.account.decorators import login_required
+def is_authenticated(request):
+    if request.user:
+        return request.user.is_authenticated
+
+    return False
+
+def ok_callback(request):
+    return redirect("/accounts/login")
+
+def ok_user(request):
+    user_serializer = AuthUserSerializer(request.user)
+    return Response(user_serializer.data, status=status.HTTP_200_OK)
+
+def ok(request):
+    return Response(status=status.HTTP_200_OK)
+
+def unauthorized(request):
+    return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 # Cuando las rutas son accesibles, se redirige a la pagina de base callback de djangoallauth 
 # el cual es el SITE_ID configurado en el admin y en settings.py
 @api_view(["GET"])
 def home(request):
-    if request.user.is_authenticated:
-        user_serializer = AuthUserSerializer(request.user)
-        return Response(user_serializer.data, status=status.HTTP_200_OK)
-    return redirect("/g-signin")
-
-@api_view(["POST"])
-def is_auth(request):
-    """This is for checking if the user is authenticated"""
-    if request.user.is_authenticated:
-        return redirect("home")
-    else:
-        return redirect("/g-signin")
-
-@api_view(["GET", "POST"])
-def log_out(request):
-    return redirect("/accounts/logout")
+    return ok_user(request) if is_authenticated(request) else ok(request)
 
 @api_view(["GET"])
-def all_users(request):
-    users = AuthUser.objects.all()
-    serializer = AuthUserSerializer(users, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK) 
+def is_auth(request):
+    """This is for checking if the user is authenticated"""
+    if is_authenticated(request):
+        return ok_user(request)
+    else:
+        return unauthorized(request)
+
+@api_view(["POST"])
+def log_out(request):
+    return redirect("/accounts/logout?next=/")
 
 @api_view(["POST"])
 def signin(request):
@@ -44,24 +52,24 @@ def signin(request):
     if user is not None:
         auth.login(request, user)
         messages.success(request, "You are now logged in", extra_tags="success", fail_silently=True)
-        return redirect("home")
+        return ok_callback(request)
     else:
         messages.error(request, "Invalid email or password", extra_tags="error", fail_silently=True)
         return redirect("/g-signin")
 
 @api_view(["GET"])
 def signin_g(request):
-    if request.user.is_authenticated:
-        return redirect("home")
-    else:
-        return render(request, "sign_in.html")
+    # redirect to site_id
+    if is_authenticated(request):
+        return ok_callback(request)
+    return render(request, "sign_in.html")
 
 @api_view(["GET"])
 def signup_g(request):
-    if request.user.is_authenticated:
-        return redirect("home")
-    else:
-        return render(request, "sign_up.html")
+    # redirect to site_id
+    if is_authenticated(request):
+        return ok_callback(request)
+    return render(request, "sign_up.html")
 
 @api_view(["GET"])
 def complete_signup(request):
@@ -97,4 +105,4 @@ def signup(request):
     auth.login(request, user)
 
     messages.success(request, "Welcome new user!", fail_silently=True)
-    return redirect("home")
+    return ok_callback(request)
