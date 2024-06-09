@@ -1,39 +1,23 @@
 from rest_framework import serializers
-from user.models import User,IdentityDocument
-from rest_framework.schemas import AutoSchema
-import coreapi
+from user.models import AuthUser, UserDetails
 
-class IdentityDocumentSerializer(serializers.ModelSerializer):
+class AuthUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = IdentityDocument
+        model = AuthUser
         fields = (
-            "document_type",
-            "number"
+            "password",
+            "email",
         )
 
-
-class UserSerializer(serializers.ModelSerializer):
-    identity_document = IdentityDocumentSerializer()
-
+class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = UserDetails
         fields = (
-            "name",
-            "password",
+            "first_name",
             "last_name",
-            "email",
             "genre",
             "phone",
             "date_born",
-            "identity_document"
+            "document_type",
+            "document_number",
         )
-
-    def create(self, validated_data):
-        identity_data = validated_data.pop('identity_document', None)
-        if not identity_data: 
-            raise Exception("inexistent?")
-
-        identity = IdentityDocument.objects.create(**identity_data)
-        validated_data['identity_document'] = identity
-        user = User.objects.create(**validated_data)
-        return user
