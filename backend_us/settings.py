@@ -186,7 +186,6 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 LOGIN_REDIRECT_URL = "/"
-CANCEL_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/g-signin"
 SOCIALACCOUNT_LOGIN_ON_GET = (
     True  # This shows google's authorization page, skipping a sign-in page that pops up

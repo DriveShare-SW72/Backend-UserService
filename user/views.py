@@ -31,7 +31,6 @@ def log_out(request):
     return redirect("/accounts/logout")
 
 @api_view(["GET"])
-@login_required()
 def all_users(request):
     users = AuthUser.objects.all()
     serializer = AuthUserSerializer(users, many=True)
