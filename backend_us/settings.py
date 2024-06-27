@@ -14,8 +14,18 @@ from pathlib import Path
 import environ
 import os
 
+TARGET = "development"
+
 env = environ.Env()
-environ.Env.read_env(".env")
+envfile = ""
+if TARGET == "development":
+    envfile = ".env.development"
+elif TARGET == "production":
+    envfile = ".env.production"
+else:
+    envfile = ".env"
+
+environ.Env.read_env(envfile)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -158,13 +168,14 @@ AUTH_USER_MODEL = "user.AuthUser"
 
 # Cors 
 
-CORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_ALL_ORIGINS = False # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:8000"]
+CORS_ALLOWED_ORIGINS = env("ALLOWED_ORIGINS").split(",")
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 # social account
 
-SITE_ID = 9
+SITE_ID = int(env("SITE_ID"))
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "SCOPE": ["email"],
@@ -189,8 +200,8 @@ SOCIALACCOUNT_PROVIDERS = {
         "GRAPH_API_URL": "https://graph.facebook.com/v13.0",
     },
 }
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = env("LOGIN_REDIRECT_URL")
+# LOGOUT_REDIRECT_URL = "http://127.0.0.1:3000"
 SOCIALACCOUNT_LOGIN_ON_GET = (
     True  # This shows google's authorization page, skipping a sign-in page that pops up
 )

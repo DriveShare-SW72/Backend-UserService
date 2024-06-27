@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.utils.serializer_helpers import json
 from user.models import AuthUser, UserDetails
 
 class AuthUserSerializer(serializers.ModelSerializer):
@@ -10,6 +11,9 @@ class AuthUserSerializer(serializers.ModelSerializer):
         )
 
 class UserDetailsSerializer(serializers.ModelSerializer):
+    def to_string(self):
+        return json.dumps(self.data)
+
     class Meta:
         model = UserDetails
         fields = (
@@ -21,3 +25,4 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             "document_type",
             "document_number",
         )
+
