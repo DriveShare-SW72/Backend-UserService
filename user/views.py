@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.utils.serializer_helpers import json
 
 from user.models import AuthUser, UserDetails
-from user.serializer import AuthUserSerializer, UserDetailsSerializer
+from user.serializer import AuthUserSerializer
 
 env = environ.Env()
 URL_SUCCESS_SIGNIN = env("URL_SUCCESS_SIGNIN")

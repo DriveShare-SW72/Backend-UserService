@@ -11,9 +11,6 @@ class AuthUserSerializer(serializers.ModelSerializer):
         )
 
 class UserDetailsSerializer(serializers.ModelSerializer):
-    def to_string(self):
-        return json.dumps(self.data)
-
     class Meta:
         model = UserDetails
         fields = (

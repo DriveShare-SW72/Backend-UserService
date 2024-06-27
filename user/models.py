@@ -47,13 +47,6 @@ class AuthUser(AbstractUser):
     class Meta(AbstractUser.Meta):
         db_table = "auth_users"
 
-    # name = models.CharField(max_length=50)
-    # last_name = models.CharField(max_length=50)
-    # genre = models.CharField(max_length=1)
-    # phone = models.CharField(max_length=50)
-    # date_born = models.DateField()
-    # document_type = models.CharField(max_length=5)
-    # document_number = models.CharField(max_length=5)
     username = None
     first_name = models.CharField(max_length=40)
     email = models.CharField(unique=True, blank=False, max_length=60)
